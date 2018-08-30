@@ -3,3 +3,8 @@
 /nbproject/
 /.idea/
 *.iml
+/bin/
+
+.settings/
+.classpath
+.project

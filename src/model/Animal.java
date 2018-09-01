@@ -1,9 +1,11 @@
 package model;
 
+import java.io.Serializable;
+
 /**
- * Classe que representa um animal.
+ * Entidade que representa um animal.
  */
-public class Animal {
+public class Animal implements Serializable {
 
     /**
      * Identificação numerica do animal.
@@ -16,9 +18,5 @@ public class Animal {
 
     public int getIdentificador() {
         return identificador;
-    }
-
-    public void setIdentificador(int identificador) {
-        this.identificador = identificador;
     }
 }

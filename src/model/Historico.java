@@ -1,18 +1,25 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Classe que representa um histórico de um {@link Animal}.
+ * Entidade que representa um histórico de um {@link Animal}.
  */
-public class Historico {
+public class Historico implements Serializable {
 
-    public Historico(Date data, double peso, short altura, double temperatura) {
+    public Historico(Animal animal, Date data, double peso, short altura, double temperatura) {
+        this.animal = animal;
         this.data = data;
         this.peso = peso;
         this.altura = altura;
         this.temperatura = temperatura;
     }
+
+    /**
+     * Animal que o histórico em questão remete.
+     */
+    private Animal animal;
 
     /**
      * Data do histórico.
@@ -34,35 +41,23 @@ public class Historico {
      */
     private double temperatura;
 
-    public Date getData() {
-        return data;
+    public Animal getAnimal() {
+        return animal;
     }
 
-    public void setData(Date data) {
-        this.data = data;
+    public Date getData() {
+        return data;
     }
 
     public double getPeso() {
         return peso;
     }
 
-    public void setPeso(double peso) {
-        this.peso = peso;
-    }
-
     public short getAltura() {
         return altura;
     }
 
-    public void setAltura(short altura) {
-        this.altura = altura;
-    }
-
     public double getTemperatura() {
         return temperatura;
-    }
-
-    public void setTemperatura(double temperatura) {
-        this.temperatura = temperatura;
     }
 }

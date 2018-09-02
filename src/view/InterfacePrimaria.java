@@ -1,4 +1,4 @@
-package interfaces;
+package view;
 
 import java.awt.EventQueue;
 import java.awt.ScrollPane;
@@ -7,6 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -16,26 +22,26 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import controller.GerenciadorDosDadosImportados;
+import controller.services.AnimalService;
+import controller.utils.ExportarHistoricos;
+import controller.utils.ImportarHistoricos;
+import controller.utils.SeletorDeArquivo;
 import model.Animal;
+import model.Historico;
+
+import java.awt.BorderLayout;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Font;
 
 public class InterfacePrimaria extends JFrame {
-
-	private DefaultTableModel modeloTabelaInformacoesSalva;
-
-	public DefaultTableModel getModeloTabelaInformacoesSalva() {
-		return modeloTabelaInformacoesSalva;
-	}
-
-	public void setModeloTabelaInformacoesSalva(DefaultTableModel modeloTabelaInformacoesSalva) {
-		this.modeloTabelaInformacoesSalva = modeloTabelaInformacoesSalva;
-	}
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					InterfacePrimaria interfacePrimaria = new InterfacePrimaria();
-					interfacePrimaria.setModeloTabelaInformacoesSalva(new DefaultTableModel(0, 5));
 					interfacePrimaria.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -46,20 +52,22 @@ public class InterfacePrimaria extends JFrame {
 
 	public InterfacePrimaria() {
 		JPanel contentPane;
+		JPanel tabelaPesquisa;
+		JPanel tabelaBotoes;
 		JTable tabelaInformacoes;
 		JTextField txtPesquisa;
 		JButton btnPesquisar;
 		JButton btnImportar;
 		ScrollPane scroll;
+		JLabel lblTitulo;
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("Consulta animais");
+		setTitle("Trabalho de programação");
 		setBounds(100, 100, 450, 300);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(null);
 		setContentPane(contentPane);
 
 		tabelaInformacoes = new JTable() {
@@ -75,7 +83,7 @@ public class InterfacePrimaria extends JFrame {
 						public void run() {
 							try {
 								InterfaceSecundaria interfaceSecundaria = new InterfaceSecundaria(
-										(int) tabelaInformacoes.getValueAt(tabelaInformacoes.getSelectedRow(), 0));
+										AnimalService.encontrarAnimal((int)tabelaInformacoes.getValueAt(tabelaInformacoes.getSelectedRow(), 0)));
 								interfaceSecundaria.setVisible(true);
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -85,18 +93,22 @@ public class InterfacePrimaria extends JFrame {
 				}
 			}
 		});
+		contentPane.setLayout(new BorderLayout(0, 10));
 		tabelaInformacoes.setModel(modeloTabelaInformacoes());
 		scroll = new ScrollPane();
-		scroll.setBounds(27, 50, 375, 157);
 		scroll.add(tabelaInformacoes);
-		contentPane.add(scroll);
+		contentPane.add(scroll, BorderLayout.CENTER);
+
+		tabelaPesquisa = new JPanel();
+		contentPane.add(tabelaPesquisa, BorderLayout.NORTH);
+		tabelaPesquisa.setLayout(new BorderLayout(10, 10));
 
 		txtPesquisa = new JTextField();
-		txtPesquisa.setBounds(27, 22, 255, 20);
-		contentPane.add(txtPesquisa);
+		tabelaPesquisa.add(txtPesquisa, BorderLayout.CENTER);
 		txtPesquisa.setColumns(10);
 
 		btnPesquisar = new JButton("Pesquisar");
+		tabelaPesquisa.add(btnPesquisar, BorderLayout.EAST);
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (txtPesquisa.getText().equals("")) {
@@ -109,49 +121,67 @@ public class InterfacePrimaria extends JFrame {
 
 					for (int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
 						if (txtPesquisa.getText().equals(modeloTabelaInformacoes.getValueAt(i, 0).toString())) {
-							System.out.println("Entro");
 							modeloTabelaPesquisa.addRow(new Object[] { modeloTabelaInformacoes.getValueAt(i, 0),
 									modeloTabelaInformacoes.getValueAt(i, 1), modeloTabelaInformacoes.getValueAt(i, 2),
 									modeloTabelaInformacoes.getValueAt(i, 3),
 									modeloTabelaInformacoes.getValueAt(i, 4), });
 						}
 					}
-					
-					if(modeloTabelaPesquisa.getRowCount() > 0) {
+
+					if (modeloTabelaPesquisa.getRowCount() > 0) {
 						tabelaInformacoes.setModel(modeloTabelaPesquisa);
 						tabelaInformacoes.repaint();
-					}
-					else {
-						JOptionPane.showMessageDialog(null, "Não foi encontrado nenhuma informação para o dado inserido na pesquisa");
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Não foi encontrado nenhuma informação para o dado inserido na pesquisa");
 					}
 
 				}
 				txtPesquisa.setText("");
 			}
 		});
-		btnPesquisar.setBounds(302, 22, 100, 20);
-		contentPane.add(btnPesquisar);
+
+		lblTitulo = new JLabel("Consulta de animais");
+		lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		tabelaPesquisa.add(lblTitulo, BorderLayout.NORTH);
+
+		tabelaBotoes = new JPanel();
+		contentPane.add(tabelaBotoes, BorderLayout.SOUTH);
 
 		btnImportar = new JButton("Importar");
+		tabelaBotoes.add(btnImportar);
 		btnImportar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Path arquivoImportado = SeletorDeArquivo.selecionarArquivo();
 
+				if (arquivoImportado == null) {
+					return;
+				}
+
+				ImportarHistoricos.importarHistoricosDeArquivoExterno(arquivoImportado);
+				ExportarHistoricos.persistirHistoricosDosAnimais();
+
+				tabelaInformacoes.setModel(modeloTabelaInformacoes());
 			}
 		});
-		btnImportar.setBounds(27, 218, 89, 23);
-		contentPane.add(btnImportar);
 	}
 
 	public DefaultTableModel modeloTabelaInformacoes() {
-		DefaultTableModel modeloTabelaInformacoes = new DefaultTableModel(0, 5);
+		DefaultTableModel modeloTabelaInformacoes = new DefaultTableModel(new Object[][] {},
+				new String[] { "Identificação", "Data", "Peso", "Altura", "Temperatura" });
 		adicionarValorModeloTabelaInformacoes(modeloTabelaInformacoes);
 		return modeloTabelaInformacoes;
 	}
 
 	private void adicionarValorModeloTabelaInformacoes(DefaultTableModel modeloTabelaInformacoes) {
-		for (int i = 0; i < 5; i++) {
-			Animal animal = new Animal(i);
-			modeloTabelaInformacoes.addRow(new Object[] { animal.getIdentificador() });
+		List<Historico> historicos = GerenciadorDosDadosImportados.getHistoricos();
+		for (Historico historico : historicos) {
+			Date data = historico.getData();
+			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+			modeloTabelaInformacoes.addRow(new Object[] { historico.getAnimal().getIdentificador(),
+					formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura() });
 		}
 	}
 

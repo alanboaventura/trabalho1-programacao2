@@ -31,12 +31,12 @@ public class GerenciadorDosDadosImportados {
     }
 
     public static void adicionarAnimal(Animal animal) {
-        if (animal == null) return;
+        if (animal == null || animais.stream().anyMatch(a -> a.equals(animal))) return;
         animais.add(animal);
     }
 
     public static void adicionarHistorico(Historico historico) {
-        if (historico == null) return;
+        if (historico == null || historicos.stream().anyMatch(h -> h.equals(historico))) return;
         historicos.add(historico);
     }
 }

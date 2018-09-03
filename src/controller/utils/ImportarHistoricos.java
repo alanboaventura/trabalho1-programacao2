@@ -1,7 +1,7 @@
 package controller.utils;
 
-import controller.services.AnimalService;
 import controller.GerenciadorDosDadosImportados;
+import controller.services.AnimalService;
 import model.Animal;
 import model.Historico;
 
@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 

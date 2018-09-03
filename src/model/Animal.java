@@ -19,4 +19,12 @@ public class Animal implements Serializable {
     public int getIdentificador() {
         return identificador;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Animal)) return false;
+        Animal animal = (Animal) obj;
+        return getIdentificador() == animal.getIdentificador();
+    }
 }

@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Entidade que representa um histórico de um {@link Animal}.
@@ -59,5 +60,17 @@ public class Historico implements Serializable {
 
     public double getTemperatura() {
         return temperatura;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Historico)) return false;
+        Historico historico = (Historico) o;
+        return Double.compare(historico.getPeso(), getPeso()) == 0 &&
+                getAltura() == historico.getAltura() &&
+                Double.compare(historico.getTemperatura(), getTemperatura()) == 0 &&
+                Objects.equals(getAnimal(), historico.getAnimal()) &&
+                Objects.equals(getData(), historico.getData());
     }
 }

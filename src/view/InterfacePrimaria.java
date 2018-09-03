@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.GerenciadorDosDadosImportados;
 import controller.services.AnimalService;
+import controller.services.HistoricosService;
 import controller.utils.ExportarHistoricos;
 import controller.utils.ImportarHistoricos;
 import controller.utils.SeletorDeArquivo;
@@ -36,6 +37,9 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 
 public class InterfacePrimaria extends JFrame {
+
+	private DefaultTableModel modeloTabelaPadrao = new DefaultTableModel(new Object[][] {},
+			new String[] { "Identificação", "Data", "Peso", "Altura", "Temperatura" });
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -83,7 +87,8 @@ public class InterfacePrimaria extends JFrame {
 						public void run() {
 							try {
 								InterfaceSecundaria interfaceSecundaria = new InterfaceSecundaria(
-										AnimalService.encontrarAnimal((int)tabelaInformacoes.getValueAt(tabelaInformacoes.getSelectedRow(), 0)));
+										AnimalService.encontrarAnimal((int) tabelaInformacoes
+												.getValueAt(tabelaInformacoes.getSelectedRow(), 0)));
 								interfaceSecundaria.setVisible(true);
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -94,7 +99,7 @@ public class InterfacePrimaria extends JFrame {
 			}
 		});
 		contentPane.setLayout(new BorderLayout(0, 10));
-		tabelaInformacoes.setModel(modeloTabelaInformacoes());
+		tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
 		scroll = new ScrollPane();
 		scroll.add(tabelaInformacoes);
 		contentPane.add(scroll, BorderLayout.CENTER);
@@ -112,7 +117,8 @@ public class InterfacePrimaria extends JFrame {
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (txtPesquisa.getText().equals("")) {
-					tabelaInformacoes.setModel(modeloTabelaInformacoes());
+					LimparTabela(tabelaInformacoes);
+					tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
 					tabelaInformacoes.repaint();
 				} else {
 					DefaultTableModel modeloTabelaInformacoes = modeloTabelaInformacoes();
@@ -162,9 +168,26 @@ public class InterfacePrimaria extends JFrame {
 				ImportarHistoricos.importarHistoricosDeArquivoExterno(arquivoImportado);
 				ExportarHistoricos.persistirHistoricosDosAnimais();
 
-				tabelaInformacoes.setModel(modeloTabelaInformacoes());
+				tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
 			}
 		});
+	}
+
+	private void LimparTabela(JTable tabelaInformacoes) {
+		int linhas = tabelaInformacoes.getRowCount();
+		for (int i = 0; i < linhas; i++) {
+			DefaultTableModel model = (DefaultTableModel) tabelaInformacoes.getModel();
+			model.removeRow(0);
+			model.fireTableDataChanged();
+			tabelaInformacoes.updateUI();
+		}
+	}
+
+	public DefaultTableModel modeloTabelaInformacoesPadrao() {
+		DefaultTableModel modeloTabela = modeloTabelaPadrao;
+		ImportarHistoricos.importarHistoricosImportadosPreviamente();
+		adicionarValorModeloTabelaInformacoes(modeloTabela);
+		return modeloTabela;
 	}
 
 	public DefaultTableModel modeloTabelaInformacoes() {
@@ -176,13 +199,18 @@ public class InterfacePrimaria extends JFrame {
 
 	private void adicionarValorModeloTabelaInformacoes(DefaultTableModel modeloTabelaInformacoes) {
 		List<Historico> historicos = GerenciadorDosDadosImportados.getHistoricos();
+		String historicosAdicionados = ",";
 		for (Historico historico : historicos) {
-			Date data = historico.getData();
-			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			if (!historicosAdicionados.contains(historico.getAnimal().getIdentificador() + "")) {
+				Date data = historico.getData();
+				DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-			modeloTabelaInformacoes.addRow(new Object[] { historico.getAnimal().getIdentificador(),
-					formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura() });
+				modeloTabelaInformacoes
+						.addRow(new Object[] { historico.getAnimal().getIdentificador(), formatter.format(data),
+								historico.getPeso(), historico.getAltura(), historico.getTemperatura() });
+				historicosAdicionados += historico.getAnimal().getIdentificador() + ",";
+			}
+
 		}
 	}
-
 }

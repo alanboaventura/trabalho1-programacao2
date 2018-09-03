@@ -3,9 +3,9 @@
 /out/
 /nbproject/
 /.idea/
-*.iml
 /bin/
-
+/META-INF/
+*.iml
 .settings/
 .classpath
 .project

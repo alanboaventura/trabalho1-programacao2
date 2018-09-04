@@ -56,7 +56,6 @@ public class ImportarHistoricos {
 
                 } catch (EOFException ex) {
                     break;
-                    z
                 }
             }
         } catch (Exception ex) {

@@ -1,6 +1,7 @@
 package view;
 
 import controller.services.HistoricosService;
+import controller.utils.ExportarHistoricos;
 import model.Animal;
 import model.Historico;
 
@@ -31,21 +32,22 @@ public class InterfaceSecundaria extends JFrame {
             Date data = historico.getData();
             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-            modeloTabelaHistorico.addRow(new Object[]{formatter.format(data), historico.getPeso(),
-                    historico.getAltura(), historico.getTemperatura()});
+            modeloTabelaHistorico.addRow(new Object[]{formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
         }
-        exibirInterfaceSecundaria(modeloTabelaHistorico, animal.getIdentificador());
+
+        exibirInterfaceSecundaria(modeloTabelaHistorico, animal);
     }
 
-    private void exibirInterfaceSecundaria(DefaultTableModel modeloTabelaHistorico, int identificacao) {
+    private void exibirInterfaceSecundaria(DefaultTableModel modeloTabelaHistorico, Animal animal) {
         setBounds(100, 100, 450, 300);
+        setResizable(false);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 10));
         setContentPane(contentPane);
         setLocationRelativeTo(null);
 
-        lblTitulo = new JLabel("Informações do animal com a identificação " + identificacao);
+        lblTitulo = new JLabel("Informações do animal com a identificação " + animal.getIdentificador());
         lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 15));
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         contentPane.add(lblTitulo, BorderLayout.NORTH);
@@ -54,7 +56,10 @@ public class InterfaceSecundaria extends JFrame {
         contentPane.add(tabelaBotoes, BorderLayout.SOUTH);
         tabelaBotoes.setLayout(new GridLayout(0, 2, 50, 0));
 
-        btnGerarArquivoTxt = new JButton("Gerar arquivo txt");
+        btnGerarArquivoTxt = new JButton("Exportar para arquivo .txt");
+        btnGerarArquivoTxt.addActionListener(e -> {
+            ExportarHistoricos.exportarHistoricosDeUmAnimalParaTxt(animal);
+        });
         tabelaBotoes.add(btnGerarArquivoTxt);
 
         tabelaHistorico = new JTable();

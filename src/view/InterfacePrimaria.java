@@ -46,7 +46,7 @@ public class InterfacePrimaria extends JFrame {
         JLabel lblTitulo;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Trabalho de programação");
+        setTitle("Trabalho 1 Programação 2 - Alan Boaventura e Gabriel Castellani");
         setBounds(100, 100, 450, 300);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -65,9 +65,7 @@ public class InterfacePrimaria extends JFrame {
                 if (evento.getClickCount() == 2) {
                     EventQueue.invokeLater(() -> {
                         try {
-                            InterfaceSecundaria interfaceSecundaria = new InterfaceSecundaria(
-                                    AnimalService.encontrarAnimal((int) tabelaInformacoes
-                                            .getValueAt(tabelaInformacoes.getSelectedRow(), 0)));
+                            InterfaceSecundaria interfaceSecundaria = new InterfaceSecundaria(AnimalService.encontrarAnimal((int) tabelaInformacoes.getValueAt(tabelaInformacoes.getSelectedRow(), 0)));
                             interfaceSecundaria.setVisible(true);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -76,6 +74,7 @@ public class InterfacePrimaria extends JFrame {
                 }
             }
         });
+
         contentPane.setLayout(new BorderLayout(0, 10));
         tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
         scroll = new ScrollPane();
@@ -94,20 +93,18 @@ public class InterfacePrimaria extends JFrame {
         tabelaPesquisa.add(btnPesquisar, BorderLayout.EAST);
         btnPesquisar.addActionListener(arg0 -> {
             if (txtPesquisa.getText().equals("")) {
-                LimparTabela(tabelaInformacoes);
-                tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
-                tabelaInformacoes.repaint();
+                recarregarTabela(tabelaInformacoes);
             } else {
                 DefaultTableModel modeloTabelaInformacoes = modeloTabelaInformacoes();
-                DefaultTableModel modeloTabelaPesquisa = new DefaultTableModel(0,
-                        modeloTabelaInformacoes.getColumnCount());
+                DefaultTableModel modeloTabelaPesquisa = new DefaultTableModel(0, modeloTabelaInformacoes.getColumnCount());
 
                 for (int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
                     if (txtPesquisa.getText().equals(modeloTabelaInformacoes.getValueAt(i, 0).toString())) {
                         modeloTabelaPesquisa.addRow(new Object[]{modeloTabelaInformacoes.getValueAt(i, 0),
-                                modeloTabelaInformacoes.getValueAt(i, 1), modeloTabelaInformacoes.getValueAt(i, 2),
+                                modeloTabelaInformacoes.getValueAt(i, 1),
+                                modeloTabelaInformacoes.getValueAt(i, 2),
                                 modeloTabelaInformacoes.getValueAt(i, 3),
-                                modeloTabelaInformacoes.getValueAt(i, 4),});
+                                modeloTabelaInformacoes.getValueAt(i, 4)});
                     }
                 }
 
@@ -115,10 +112,10 @@ public class InterfacePrimaria extends JFrame {
                     tabelaInformacoes.setModel(modeloTabelaPesquisa);
                     tabelaInformacoes.repaint();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Não foi encontrado nenhuma informação para o identificador animal inserido na pesquisa");
+                    JOptionPane.showMessageDialog(null, "Não foi encontrada nenhuma informação para o identificador animal inserido na pesquisa!");
                 }
-
             }
+
             txtPesquisa.setText("");
         });
 
@@ -134,7 +131,6 @@ public class InterfacePrimaria extends JFrame {
         tabelaBotoes.add(btnImportar);
         btnImportar.addActionListener(e -> {
             Path arquivoImportado = SeletorDeArquivo.selecionarArquivo();
-
             if (arquivoImportado == null) {
                 return;
             }
@@ -142,11 +138,11 @@ public class InterfacePrimaria extends JFrame {
             ImportarHistoricos.importarHistoricosDeArquivoExterno(arquivoImportado);
             ExportarHistoricos.persistirHistoricosDosAnimais();
 
-            tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
+            recarregarTabela(tabelaInformacoes);
         });
     }
 
-    private void LimparTabela(JTable tabelaInformacoes) {
+    private void recarregarTabela(JTable tabelaInformacoes) {
         int linhas = tabelaInformacoes.getRowCount();
         for (int i = 0; i < linhas; i++) {
             DefaultTableModel model = (DefaultTableModel) tabelaInformacoes.getModel();
@@ -154,16 +150,19 @@ public class InterfacePrimaria extends JFrame {
             model.fireTableDataChanged();
             tabelaInformacoes.updateUI();
         }
+
+        tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
+        tabelaInformacoes.repaint();
     }
 
-    public DefaultTableModel modeloTabelaInformacoesPadrao() {
+    private DefaultTableModel modeloTabelaInformacoesPadrao() {
         DefaultTableModel modeloTabela = modeloTabelaPadrao;
         ImportarHistoricos.importarHistoricosImportadosPreviamente();
         adicionarValorModeloTabelaInformacoes(modeloTabela);
         return modeloTabela;
     }
 
-    public DefaultTableModel modeloTabelaInformacoes() {
+    private DefaultTableModel modeloTabelaInformacoes() {
         DefaultTableModel modeloTabelaInformacoes = new DefaultTableModel(new Object[][]{}, new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"});
         adicionarValorModeloTabelaInformacoes(modeloTabelaInformacoes);
         return modeloTabelaInformacoes;

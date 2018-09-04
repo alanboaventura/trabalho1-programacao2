@@ -56,6 +56,7 @@ public class ImportarHistoricos {
 
                 } catch (EOFException ex) {
                     break;
+                    z
                 }
             }
         } catch (Exception ex) {
@@ -64,29 +65,31 @@ public class ImportarHistoricos {
     }
 
     public static void importarHistoricosImportadosPreviamente() {
-        final Path pastaHistoricos = Paths.get("resources/historicos");
-        if (!pastaHistoricos.toFile().exists()) {
+        final Path pastaDados = Paths.get("resources/database");
+        if (!pastaDados.toFile().exists()) {
             try {
-                Files.createDirectory(pastaHistoricos);
+                Files.createDirectory(pastaDados);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, String.format("Não foi possível criar a pasta para armazenar os históricos dos animais.%n%s", ex.toString()), "ERRO!", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         }
 
         List<Integer> identificadoresDosAnimais = new ArrayList<>();
         try {
-            DirectoryStream<Path> stream = Files.newDirectoryStream(pastaHistoricos);
+            DirectoryStream<Path> stream = Files.newDirectoryStream(pastaDados);
             for (Path p : stream) {
                 identificadoresDosAnimais.add(Integer.parseInt(p.getFileName().toString().split(".dat")[0]));
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, String.format("Não foi possível importar os animais.%n%s", ex.toString()), "ERRO!", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        for (Integer identificador : identificadoresDosAnimais){
+        for (Integer identificador : identificadoresDosAnimais) {
             Animal animal = AnimalService.encontrarAnimal(identificador);
 
-            try (ObjectInputStream file = new ObjectInputStream(new FileInputStream(Paths.get(String.format("%s/%s.dat", pastaHistoricos.toAbsolutePath(), animal.getIdentificador())).toFile()))) {
+            try (ObjectInputStream file = new ObjectInputStream(new FileInputStream(Paths.get(String.format("%s/%s.dat", pastaDados.toAbsolutePath(), animal.getIdentificador())).toFile()))) {
                 List<Historico> historicos = (List<Historico>) file.readObject();
                 historicos.forEach(GerenciadorDosDadosImportados::adicionarHistorico);
             } catch (Exception ex) {

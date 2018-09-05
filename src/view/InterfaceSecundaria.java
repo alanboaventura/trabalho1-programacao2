@@ -26,6 +26,7 @@ public class InterfaceSecundaria extends JFrame {
 
     public InterfaceSecundaria(Animal animal) {
         List<Historico> historicos = HistoricosService.encontrarHistoricosDeAnimal(animal);
+        historicos.sort((a, b) -> a.getData().compareTo(b.getData()));
         DefaultTableModel modeloTabelaHistorico = new DefaultTableModel(new String[]{"Data", "Peso", "Altura", "Temperatura"}, 0);
 
         for (Historico historico : historicos) {

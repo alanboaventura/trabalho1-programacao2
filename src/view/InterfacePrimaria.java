@@ -15,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -208,11 +209,21 @@ public class InterfacePrimaria extends JFrame {
             }else {
             	for(int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
             		if(modeloTabelaInformacoes.getValueAt(i, 0).equals(historico.getAnimal().getIdentificador())) {
-            			modeloTabelaInformacoes.removeRow(i);
-            			Date data = historico.getData();
-                        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            		    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            			Date dataTabela;
+						try {
+							dataTabela = formatter.parse(modeloTabelaInformacoes.getValueAt(i, 1).toString());
+            			if(dataTabela.before(historico.getData())) {
+            				modeloTabelaInformacoes.removeRow(i);
+                			Date data = historico.getData();
+                       
 
-                        modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
+                            modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});    		
+            			}
+						} catch (ParseException e) {
+							new Exception("Erro ao converter a data para inserir na tabela");
+						}
+          	
             		}
             	}
             }

@@ -1,9 +1,9 @@
 package view;
 
-import controller.GerenciadorDosDadosImportados;
+import controller.database.GerenciadorDosDadosImportados;
 import controller.services.AnimalService;
-import controller.utils.ExportarHistoricos;
-import controller.utils.ImportarHistoricos;
+import controller.services.ExportarHistoricosService;
+import controller.services.ImportarHistoricosService;
 import controller.utils.SeletorDeArquivo;
 import model.Historico;
 
@@ -164,8 +164,8 @@ public class InterfacePrimaria extends JFrame {
                 return;
             }
 
-            ImportarHistoricos.importarHistoricosDeArquivoExterno(arquivoImportado);
-            ExportarHistoricos.persistirHistoricosDosAnimais();
+            ImportarHistoricosService.importarHistoricosDeArquivoExterno(arquivoImportado);
+            ExportarHistoricosService.persistirHistoricosDosAnimais();
 
             recarregarTabela(tabelaInformacoes);
         });
@@ -186,7 +186,7 @@ public class InterfacePrimaria extends JFrame {
 
     private DefaultTableModel modeloTabelaInformacoesPadrao() {
         DefaultTableModel modeloTabela = modeloTabelaPadrao;
-        ImportarHistoricos.importarHistoricosImportadosPreviamente();
+        ImportarHistoricosService.importarHistoricosImportadosPreviamente();
         adicionarValorModeloTabelaInformacoes(modeloTabela);
         return modeloTabela;
     }

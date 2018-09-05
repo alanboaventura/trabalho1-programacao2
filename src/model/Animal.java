@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Animal implements Serializable {
 
     /**
-     * Identificação numerica do animal.
+     * Identificação numérica do animal.
      */
     private int identificador;
 

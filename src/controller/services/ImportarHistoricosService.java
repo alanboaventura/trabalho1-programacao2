@@ -1,7 +1,7 @@
-package controller.utils;
+package controller.services;
 
-import controller.GerenciadorDosDadosImportados;
-import controller.services.AnimalService;
+import controller.database.GerenciadorDosDadosImportados;
+import controller.utils.GerenciadorDeDiretorios;
 import model.Animal;
 import model.Historico;
 
@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -24,10 +24,10 @@ import java.util.List;
 /**
  * Classe responsável por implementar métodos para a importação de históricos dos animais.
  */
-public class ImportarHistoricos {
+public class ImportarHistoricosService {
 
     /**
-     * Importa os históricos dos animais de um deterinado arquivo binário.
+     * Importa os históricos dos animais de um deterinado arquivo binário e exporta um arquivo txt com essas informações, onde esse arquivo exportado pode ser visualizado na pasta "exports".
      *
      * @param pathDoArquivo {@link Path} do arquivo binário que armazena as informações que devem ser importadas para o sistema.
      */
@@ -42,6 +42,14 @@ public class ImportarHistoricos {
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                 Date dataDosHistoricos = formatter.parse(dataString.toString());
 
+                Path pastaExportacao = Paths.get("resources/export");
+                GerenciadorDeDiretorios.criarDiretorioCasoNaoExista(pastaExportacao);
+
+                String dataFormatadaParaNomeDeArquivo = new SimpleDateFormat("dd-MM-yyyy").format(dataDosHistoricos);
+                FileWriter arqTexto = new FileWriter(String.format("%s/historicos-%s.txt", pastaExportacao.toAbsolutePath(), dataFormatadaParaNomeDeArquivo));
+                arqTexto.write(formatter.format(dataDosHistoricos));
+                arqTexto.write(System.lineSeparator());
+
                 try {
                     while (true) {
                         int identificadorAnimal = file.readInt();
@@ -52,27 +60,31 @@ public class ImportarHistoricos {
                         Animal animal = AnimalService.encontrarAnimal(identificadorAnimal);
                         Historico historico = new Historico(animal, dataDosHistoricos, pesoAnimal, alturaAnimal, temperaturaAnimal);
                         GerenciadorDosDadosImportados.adicionarHistorico(historico);
+
+                        String informacoesHistorico = String.join(",", String.valueOf(identificadorAnimal), String.valueOf(pesoAnimal), String.valueOf(alturaAnimal), String.valueOf(temperaturaAnimal));
+                        arqTexto.write(informacoesHistorico);
+                        arqTexto.write(System.lineSeparator());
                     }
 
                 } catch (EOFException ex) {
                     break;
+                } finally {
+                    arqTexto.close();
                 }
             }
+            JOptionPane.showMessageDialog(null, String.format("Históricos do arquivo \"%s\" importados com sucesso!", pathDoArquivo.toAbsolutePath()), "SUCESSO!", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, String.format("Não foi possível importar o histórico \"%s\".%n%s", pathDoArquivo.getFileName(), ex.toString()), "ERRO!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, String.format("Não foi possível importar o arquivo de históricos \"%s\".%n%s", pathDoArquivo.getFileName(), ex.toString()), "ERRO!", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    /**
+     * Importa os históricos dos respectivos animais importados previamente, onde essas informações estarão salvas em arquivos binários na pasta "database".
+     */
     public static void importarHistoricosImportadosPreviamente() {
         final Path pastaDados = Paths.get("resources/database");
-        if (!pastaDados.toFile().exists()) {
-            try {
-                Files.createDirectory(pastaDados);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, String.format("Não foi possível criar a pasta para armazenar os históricos dos animais.%n%s", ex.toString()), "ERRO!", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
+        GerenciadorDeDiretorios.criarDiretorioCasoNaoExista(pastaDados);
 
         List<Integer> identificadoresDosAnimais = new ArrayList<>();
         try {

@@ -1,7 +1,7 @@
 package view;
 
+import controller.services.ExportarHistoricosService;
 import controller.services.HistoricosService;
-import controller.utils.ExportarHistoricos;
 import model.Animal;
 import model.Historico;
 
@@ -58,7 +58,7 @@ public class InterfaceSecundaria extends JFrame {
 
         btnGerarArquivoTxt = new JButton("Exportar para arquivo .txt");
         btnGerarArquivoTxt.addActionListener(e -> {
-            ExportarHistoricos.exportarHistoricosDeUmAnimalParaTxt(animal);
+            ExportarHistoricosService.exportarHistoricosDeUmAnimalParaTxt(animal);
         });
         tabelaBotoes.add(btnGerarArquivoTxt);
 

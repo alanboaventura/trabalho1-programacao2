@@ -1,6 +1,6 @@
 package controller.services;
 
-import controller.GerenciadorDosDadosImportados;
+import controller.database.GerenciadorDosDadosImportados;
 import model.Animal;
 import model.Historico;
 

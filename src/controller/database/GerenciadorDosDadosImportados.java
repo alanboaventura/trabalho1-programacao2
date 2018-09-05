@@ -1,4 +1,4 @@
-package controller;
+package controller.database;
 
 import model.Animal;
 import model.Historico;

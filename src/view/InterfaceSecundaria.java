@@ -39,6 +39,7 @@ public class InterfaceSecundaria extends JFrame {
     }
 
     private void exibirInterfaceSecundaria(DefaultTableModel modeloTabelaHistorico, Animal animal) {
+        setTitle("Trabalho 1 Programação 2");
         setBounds(100, 100, 450, 300);
         setResizable(false);
         contentPane = new JPanel();
@@ -65,15 +66,15 @@ public class InterfaceSecundaria extends JFrame {
         tabelaHistorico = new JTable();
         tabelaHistorico.setEnabled(false);
         tabelaHistorico.setModel(modeloTabelaHistorico);
-        
+
         scroll = new ScrollPane();
         scroll.add(tabelaHistorico);
-        
+
         tabelaGeralHistorico = new JTable();
         tabelaGeralHistorico.setLayout(new BorderLayout());
         tabelaGeralHistorico.add(tabelaHistorico.getTableHeader(), BorderLayout.NORTH);
         tabelaGeralHistorico.add(scroll, BorderLayout.CENTER);
-        
+
         contentPane.add(tabelaGeralHistorico, BorderLayout.CENTER);
     }
 }

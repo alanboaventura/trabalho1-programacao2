@@ -10,8 +10,6 @@ import model.Historico;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -50,7 +48,7 @@ public class InterfacePrimaria extends JFrame {
         JLabel icone;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Trabalho 1 Programação 2 - Alan Boaventura e Gabriel Castellani");
+        setTitle("Trabalho 1 Programação 2");
         setBounds(100, 100, 450, 300);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -77,18 +75,18 @@ public class InterfacePrimaria extends JFrame {
                     });
                 }
             }
-        });   
+        });
         contentPane.setLayout(new BorderLayout(0, 10));
         tabelaInformacoes.setModel(modeloTabelaInformacoesPadrao());
         scroll = new ScrollPane();
         scroll.add(tabelaInformacoes.getTableHeader());
         scroll.add(tabelaInformacoes);
-        
+
         tabelaInformacoesGeral = new JPanel();
         tabelaInformacoesGeral.setLayout(new BorderLayout(0, 0));
         tabelaInformacoesGeral.add(scroll, BorderLayout.CENTER);
         tabelaInformacoesGeral.add(tabelaInformacoes.getTableHeader(), BorderLayout.NORTH);
-        
+
         contentPane.add(tabelaInformacoesGeral, BorderLayout.CENTER);
 
         tabelaPesquisa = new JPanel();
@@ -141,21 +139,21 @@ public class InterfacePrimaria extends JFrame {
 
         btnImportar = new JButton("Importar");
         tabelaBotoes.add(btnImportar);
-        
+
         icone = new JLabel();
         icone.setIcon(new ImageIcon("resources//icons//informacao.png"));
-        
+
         tabelaBotoes.add(icone);
-        
+
         JPopupMenu popupMenu = new JPopupMenu();
         addPopup(icone, popupMenu);
-        
+
         JLabel lblTrabalho = new JLabel("Equipe do trabalho:");
         popupMenu.add(lblTrabalho);
-        
+
         JLabel lblAlan = new JLabel("Alan Boaventura");
         popupMenu.add(lblAlan);
-        
+
         JLabel lblGabriel = new JLabel("Gabriel Castellani de Oliveira");
         popupMenu.add(lblGabriel);
         btnImportar.addActionListener(e -> {
@@ -192,7 +190,7 @@ public class InterfacePrimaria extends JFrame {
     }
 
     private DefaultTableModel modeloTabelaInformacoes() {
-    	DefaultTableModel modeloTabelaInformacoes = new DefaultTableModel(new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"}, 0);
+        DefaultTableModel modeloTabelaInformacoes = new DefaultTableModel(new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"}, 0);
         adicionarValorModeloTabelaInformacoes(modeloTabelaInformacoes);
         return modeloTabelaInformacoes;
     }
@@ -210,31 +208,35 @@ public class InterfacePrimaria extends JFrame {
             }
         }
     }
-    
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-				popup.setVisible(true);
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				popup.setVisible(false);
-			}
-		});
-	}
+
+    private static void addPopup(Component component, final JPopupMenu popup) {
+        component.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showMenu(e);
+                }
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showMenu(e);
+                }
+            }
+
+            private void showMenu(MouseEvent e) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+                popup.setVisible(true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                popup.setVisible(false);
+            }
+        });
+    }
 }

@@ -104,7 +104,7 @@ public class InterfacePrimaria extends JFrame {
                 recarregarTabela(tabelaInformacoes);
             } else {
                 DefaultTableModel modeloTabelaInformacoes = modeloTabelaInformacoes();
-                DefaultTableModel modeloTabelaPesquisa = new DefaultTableModel(0, modeloTabelaInformacoes.getColumnCount());
+                DefaultTableModel modeloTabelaPesquisa = new DefaultTableModel(new Object[][]{}, new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"});;
 
                 for (int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
                     if (txtPesquisa.getText().equals(modeloTabelaInformacoes.getValueAt(i, 0).toString())) {
@@ -205,7 +205,18 @@ public class InterfacePrimaria extends JFrame {
 
                 modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
                 historicosAdicionados.append(historico.getAnimal().getIdentificador()).append(",");
+            }else {
+            	for(int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
+            		if(modeloTabelaInformacoes.getValueAt(i, 0).equals(historico.getAnimal().getIdentificador())) {
+            			modeloTabelaInformacoes.removeRow(i);
+            			Date data = historico.getData();
+                        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+                        modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
+            		}
+            	}
             }
+            
         }
     }
 

@@ -3,8 +3,10 @@ package view;
 import controller.database.GerenciadorDosDadosImportados;
 import controller.services.AnimalService;
 import controller.services.ExportarHistoricosService;
+import controller.services.HistoricosService;
 import controller.services.ImportarHistoricosService;
 import controller.utils.SeletorDeArquivo;
+import model.Animal;
 import model.Historico;
 
 import javax.swing.*;
@@ -105,7 +107,8 @@ public class InterfacePrimaria extends JFrame {
                 recarregarTabela(tabelaInformacoes);
             } else {
                 DefaultTableModel modeloTabelaInformacoes = modeloTabelaInformacoes();
-                DefaultTableModel modeloTabelaPesquisa = new DefaultTableModel(new Object[][]{}, new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"});;
+                DefaultTableModel modeloTabelaPesquisa = new DefaultTableModel(new Object[][]{}, new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"});
+                ;
 
                 for (int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
                     if (txtPesquisa.getText().equals(modeloTabelaInformacoes.getValueAt(i, 0).toString())) {
@@ -186,16 +189,17 @@ public class InterfacePrimaria extends JFrame {
     private DefaultTableModel modeloTabelaInformacoesPadrao() {
         DefaultTableModel modeloTabela = modeloTabelaPadrao;
         ImportarHistoricosService.importarHistoricosImportadosPreviamente();
-        adicionarValorModeloTabelaInformacoes(modeloTabela);
+        adicionarValorModeloTabelaInformacoes2(modeloTabela);
         return modeloTabela;
     }
 
     private DefaultTableModel modeloTabelaInformacoes() {
         DefaultTableModel modeloTabelaInformacoes = new DefaultTableModel(new String[]{"Identificação", "Data", "Peso", "Altura", "Temperatura"}, 0);
-        adicionarValorModeloTabelaInformacoes(modeloTabelaInformacoes);
+        adicionarValorModeloTabelaInformacoes2(modeloTabelaInformacoes);
         return modeloTabelaInformacoes;
     }
 
+    @Deprecated
     private void adicionarValorModeloTabelaInformacoes(DefaultTableModel modeloTabelaInformacoes) {
         List<Historico> historicos = GerenciadorDosDadosImportados.getHistoricos();
         StringBuilder historicosAdicionados = new StringBuilder(",");
@@ -206,28 +210,34 @@ public class InterfacePrimaria extends JFrame {
 
                 modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
                 historicosAdicionados.append(historico.getAnimal().getIdentificador()).append(",");
-            }else {
-            	for(int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
-            		if(modeloTabelaInformacoes.getValueAt(i, 0).equals(historico.getAnimal().getIdentificador())) {
-            		    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            			Date dataTabela;
-						try {
-							dataTabela = formatter.parse(modeloTabelaInformacoes.getValueAt(i, 1).toString());
-            			if(dataTabela.before(historico.getData())) {
-            				modeloTabelaInformacoes.removeRow(i);
-                			Date data = historico.getData();
-                       
-
-                            modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});    		
-            			}
-						} catch (ParseException e) {
-							new Exception("Erro ao converter a data para inserir na tabela");
-						}
-          	
-            		}
-            	}
+            } else {
+                for (int i = 0; i < modeloTabelaInformacoes.getRowCount(); i++) {
+                    if (modeloTabelaInformacoes.getValueAt(i, 0).equals(historico.getAnimal().getIdentificador())) {
+                        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                        Date dataTabela;
+                        try {
+                            dataTabela = formatter.parse(modeloTabelaInformacoes.getValueAt(i, 1).toString());
+                            if (dataTabela.before(historico.getData())) {
+                                modeloTabelaInformacoes.removeRow(i);
+                                Date data = historico.getData();
+                                modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), formatter.format(data), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
+                            }
+                        } catch (ParseException ex) {
+                            JOptionPane.showMessageDialog(null, String.format("Não foi possível exibir os animais e seus respectivos históricos.%n%s", ex.toString()), "ERRO!", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                }
             }
-            
+        }
+    }
+
+    private void adicionarValorModeloTabelaInformacoes2(DefaultTableModel modeloTabelaInformacoes) {
+        List<Animal> animais = GerenciadorDosDadosImportados.getAnimais();
+
+        for (Animal animal : animais) {
+            Historico historico = HistoricosService.encontrarHistoricoMaisRecenteDeAnimal(animal);
+            modeloTabelaInformacoes.addRow(new Object[]{historico.getAnimal().getIdentificador(), new SimpleDateFormat("dd/MM/yyyy").format(historico.getData()), historico.getPeso(), historico.getAltura(), historico.getTemperatura()});
         }
     }
 

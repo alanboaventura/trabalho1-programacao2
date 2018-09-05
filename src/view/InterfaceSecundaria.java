@@ -20,13 +20,13 @@ public class InterfaceSecundaria extends JFrame {
     private JPanel tabelaBotoes;
     private JLabel lblTitulo;
     private JButton btnGerarArquivoTxt;
+    private JTable tabelaGeralHistorico;
     private ScrollPane scroll;
     private JTable tabelaHistorico;
 
     public InterfaceSecundaria(Animal animal) {
         List<Historico> historicos = HistoricosService.encontrarHistoricosDeAnimal(animal);
-        DefaultTableModel modeloTabelaHistorico = new DefaultTableModel(0, 4);
-        modeloTabelaHistorico.addRow(new Object[]{"Data", "Peso", "Altura", "Temperatura"});
+        DefaultTableModel modeloTabelaHistorico = new DefaultTableModel(new String[]{"Data", "Peso", "Altura", "Temperatura"}, 0);
 
         for (Historico historico : historicos) {
             Date data = historico.getData();
@@ -65,10 +65,15 @@ public class InterfaceSecundaria extends JFrame {
         tabelaHistorico = new JTable();
         tabelaHistorico.setEnabled(false);
         tabelaHistorico.setModel(modeloTabelaHistorico);
-
+        
         scroll = new ScrollPane();
         scroll.add(tabelaHistorico);
-
-        contentPane.add(scroll, BorderLayout.CENTER);
+        
+        tabelaGeralHistorico = new JTable();
+        tabelaGeralHistorico.setLayout(new BorderLayout());
+        tabelaGeralHistorico.add(tabelaHistorico.getTableHeader(), BorderLayout.NORTH);
+        tabelaGeralHistorico.add(scroll, BorderLayout.CENTER);
+        
+        contentPane.add(tabelaGeralHistorico, BorderLayout.CENTER);
     }
 }
